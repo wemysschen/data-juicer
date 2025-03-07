@@ -5,13 +5,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>data_juicer.ops.mapper.dialog_intent_detection_mapper &mdash; data_juicer 1.0.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+  <title>data_juicer.ops.mapper.dialog_intent_detection_mapper &mdash; data_juicer 1.2.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
-      <script src="../../../../_static/documentation_options.js?v=1ed6394b"></script>
-      <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../../_static/documentation_options.js?v=ca842793"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
@@ -39,16 +39,16 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.core.html">data_juicer.core package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.ops.html">data_juicer.ops package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.ops.filter.html">data_juicer.ops.filter package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.ops.mapper.html">data_juicer.ops.mapper package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.ops.deduplicator.html">data_juicer.ops.deduplicator package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.ops.selector.html">data_juicer.ops.selector package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.ops.common.html">data_juicer.ops.common package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.analysis.html">data_juicer.analysis package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.config.html">data_juicer.config package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.format.html">data_juicer.format package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.core.html">data_juicer.core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.ops.html">data_juicer.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.ops.filter.html">data_juicer.ops.filter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.ops.mapper.html">data_juicer.ops.mapper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.ops.deduplicator.html">data_juicer.ops.deduplicator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.ops.selector.html">data_juicer.ops.selector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.ops.common.html">data_juicer.ops.common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.analysis.html">data_juicer.analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.config.html">data_juicer.config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.format.html">data_juicer.format</a></li>
 </ul>
 
         </div>
@@ -77,31 +77,29 @@
            <div itemprop="articleBody">
              
   <h1>Source code for data_juicer.ops.mapper.dialog_intent_detection_mapper</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">loguru</span> <span class="kn">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">NonNegativeInt</span><span class="p">,</span> <span class="n">PositiveInt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">loguru</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">NonNegativeInt</span><span class="p">,</span> <span class="n">PositiveInt</span>
 
-<span class="kn">from</span> <span class="nn">data_juicer.ops.base_op</span> <span class="kn">import</span> <span class="n">OPERATORS</span><span class="p">,</span> <span class="n">Mapper</span>
-<span class="kn">from</span> <span class="nn">data_juicer.utils.common_utils</span> <span class="kn">import</span> <span class="n">nested_set</span>
-<span class="kn">from</span> <span class="nn">data_juicer.utils.constant</span> <span class="kn">import</span> <span class="n">Fields</span><span class="p">,</span> <span class="n">MetaKeys</span>
-<span class="kn">from</span> <span class="nn">data_juicer.utils.model_utils</span> <span class="kn">import</span> <span class="n">get_model</span><span class="p">,</span> <span class="n">prepare_model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">data_juicer.ops.base_op</span><span class="w"> </span><span class="kn">import</span> <span class="n">OPERATORS</span><span class="p">,</span> <span class="n">TAGGING_OPS</span><span class="p">,</span> <span class="n">Mapper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">data_juicer.utils.constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fields</span><span class="p">,</span> <span class="n">MetaKeys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">data_juicer.utils.model_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_model</span><span class="p">,</span> <span class="n">prepare_model</span>
 
 <span class="n">OP_NAME</span> <span class="o">=</span> <span class="s1">&#39;dialog_intent_detection_mapper&#39;</span>
 
 
 <span class="c1"># TODO: LLM-based inference.</span>
 <div class="viewcode-block" id="DialogIntentDetectionMapper">
-<a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.dialog_intent_detection_mapper.DialogIntentDetectionMapper">[docs]</a>
+<a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.DialogIntentDetectionMapper">[docs]</a>
+<span class="nd">@TAGGING_OPS</span><span class="o">.</span><span class="n">register_module</span><span class="p">(</span><span class="n">OP_NAME</span><span class="p">)</span>
 <span class="nd">@OPERATORS</span><span class="o">.</span><span class="n">register_module</span><span class="p">(</span><span class="n">OP_NAME</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">DialogIntentDetectionMapper</span><span class="p">(</span><span class="n">Mapper</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DialogIntentDetectionMapper</span><span class="p">(</span><span class="n">Mapper</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mapper to generate user&#39;s intent labels in dialog. Input from</span>
 <span class="sd">    history_key, query_key and response_key. Output lists of</span>
-<span class="sd">    labels and analysis for queries in the dialog, which is</span>
-<span class="sd">    store in &#39;dialog_intent_labels&#39; and</span>
-<span class="sd">    &#39;dialog_intent_labels_analysis&#39; in Data-Juicer meta field.</span>
+<span class="sd">    labels and analysis for queries in the dialog.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">DEFAULT_SYSTEM_PROMPT</span> <span class="o">=</span> <span class="p">(</span>
@@ -137,12 +135,14 @@
     <span class="n">DEFAULT_LABELS_PATTERN</span> <span class="o">=</span> <span class="s1">&#39;意图类别：(.*?)($|</span><span class="se">\n</span><span class="s1">)&#39;</span>
 
 <div class="viewcode-block" id="DialogIntentDetectionMapper.__init__">
-<a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.dialog_intent_detection_mapper.DialogIntentDetectionMapper.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.DialogIntentDetectionMapper.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">api_model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;gpt-4o&#39;</span><span class="p">,</span>
                  <span class="n">intent_candidates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">max_round</span><span class="p">:</span> <span class="n">NonNegativeInt</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
                  <span class="o">*</span><span class="p">,</span>
+                 <span class="n">labels_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MetaKeys</span><span class="o">.</span><span class="n">dialog_intent_labels</span><span class="p">,</span>
+                 <span class="n">analysis_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MetaKeys</span><span class="o">.</span><span class="n">dialog_intent_labels_analysis</span><span class="p">,</span>
                  <span class="n">api_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">response_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">system_prompt</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -165,6 +165,11 @@
 <span class="sd">            intent labels of the open domain if it is None.</span>
 <span class="sd">        :param max_round: The max num of round in the dialog to build the</span>
 <span class="sd">            prompt.</span>
+<span class="sd">        :param labels_key: The key name in the meta field to store the</span>
+<span class="sd">            output labels. It is &#39;dialog_intent_labels&#39; in default.</span>
+<span class="sd">        :param analysis_key: The key name in the meta field to store the</span>
+<span class="sd">            corresponding analysis. It is &#39;dialog_intent_labels_analysis&#39;</span>
+<span class="sd">            in default.</span>
 <span class="sd">        :param api_endpoint: URL endpoint for the API.</span>
 <span class="sd">        :param response_path: Path to extract content from the API response.</span>
 <span class="sd">            Defaults to &#39;choices.0.message.content&#39;.</span>
@@ -194,6 +199,8 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">intent_candidates</span> <span class="o">=</span> <span class="n">intent_candidates</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_round</span> <span class="o">=</span> <span class="n">max_round</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels_key</span> <span class="o">=</span> <span class="n">labels_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">analysis_key</span> <span class="o">=</span> <span class="n">analysis_key</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">system_prompt</span> <span class="o">=</span> <span class="n">system_prompt</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_SYSTEM_PROMPT</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">query_template</span> <span class="o">=</span> <span class="n">query_template</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_QUERY_TEMPLATE</span>
@@ -222,8 +229,8 @@
 
 
 <div class="viewcode-block" id="DialogIntentDetectionMapper.build_input">
-<a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.dialog_intent_detection_mapper.DialogIntentDetectionMapper.build_input">[docs]</a>
-    <span class="k">def</span> <span class="nf">build_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">history</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+<a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.DialogIntentDetectionMapper.build_input">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">history</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">intent_candidates</span><span class="p">:</span>
             <span class="n">input_prompt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">candidate_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -240,8 +247,8 @@
 
 
 <div class="viewcode-block" id="DialogIntentDetectionMapper.parse_output">
-<a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.dialog_intent_detection_mapper.DialogIntentDetectionMapper.parse_output">[docs]</a>
-    <span class="k">def</span> <span class="nf">parse_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+<a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.DialogIntentDetectionMapper.parse_output">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
         <span class="n">analysis</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="n">labels</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
@@ -257,8 +264,13 @@
 
 
 <div class="viewcode-block" id="DialogIntentDetectionMapper.process_single">
-<a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.dialog_intent_detection_mapper.DialogIntentDetectionMapper.process_single">[docs]</a>
-    <span class="k">def</span> <span class="nf">process_single</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.DialogIntentDetectionMapper.process_single">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_single</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="n">meta</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[</span><span class="n">Fields</span><span class="o">.</span><span class="n">meta</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels_key</span> <span class="ow">in</span> <span class="n">meta</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">analysis_key</span> <span class="ow">in</span> <span class="n">meta</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">sample</span>
+
         <span class="n">client</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_key</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="n">rank</span><span class="p">)</span>
 
         <span class="n">analysis_list</span> <span class="o">=</span> <span class="p">[]</span>
@@ -300,10 +312,8 @@
             <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">))</span>
             <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="n">qa</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
 
-        <span class="n">analysis_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">Fields</span><span class="o">.</span><span class="n">meta</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">MetaKeys</span><span class="o">.</span><span class="n">dialog_intent_labels_analysis</span><span class="si">}</span><span class="s1">&#39;</span>  <span class="c1"># noqa: E501</span>
-        <span class="n">sample</span> <span class="o">=</span> <span class="n">nested_set</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">analysis_key</span><span class="p">,</span> <span class="n">analysis_list</span><span class="p">)</span>
-        <span class="n">labels_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">Fields</span><span class="o">.</span><span class="n">meta</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">MetaKeys</span><span class="o">.</span><span class="n">dialog_intent_labels</span><span class="si">}</span><span class="s1">&#39;</span>
-        <span class="n">sample</span> <span class="o">=</span> <span class="n">nested_set</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">labels_key</span><span class="p">,</span> <span class="n">labels_list</span><span class="p">)</span>
+        <span class="n">meta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">labels_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels_list</span>
+        <span class="n">meta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">analysis_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">analysis_list</span>
 
         <span class="k">return</span> <span class="n">sample</span></div>
 </div>

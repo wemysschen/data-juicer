@@ -5,13 +5,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>data_juicer.ops.mapper.dialog_sentiment_intensity_mapper &mdash; data_juicer 1.0.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+  <title>data_juicer.ops.mapper.dialog_sentiment_intensity_mapper &mdash; data_juicer 1.2.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
-      <script src="../../../../_static/documentation_options.js?v=1ed6394b"></script>
-      <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../../_static/documentation_options.js?v=ca842793"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
@@ -39,16 +39,16 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.core.html">data_juicer.core package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.ops.html">data_juicer.ops package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.ops.filter.html">data_juicer.ops.filter package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.ops.mapper.html">data_juicer.ops.mapper package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.ops.deduplicator.html">data_juicer.ops.deduplicator package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.ops.selector.html">data_juicer.ops.selector package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.ops.common.html">data_juicer.ops.common package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.analysis.html">data_juicer.analysis package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.config.html">data_juicer.config package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.format.html">data_juicer.format package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.core.html">data_juicer.core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.ops.html">data_juicer.ops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.ops.filter.html">data_juicer.ops.filter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.ops.mapper.html">data_juicer.ops.mapper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.ops.deduplicator.html">data_juicer.ops.deduplicator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.ops.selector.html">data_juicer.ops.selector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.ops.common.html">data_juicer.ops.common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.analysis.html">data_juicer.analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.config.html">data_juicer.config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data_juicer.format.html">data_juicer.format</a></li>
 </ul>
 
         </div>
@@ -77,37 +77,37 @@
            <div itemprop="articleBody">
              
   <h1>Source code for data_juicer.ops.mapper.dialog_sentiment_intensity_mapper</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">loguru</span> <span class="kn">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">NonNegativeInt</span><span class="p">,</span> <span class="n">PositiveInt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">loguru</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">NonNegativeInt</span><span class="p">,</span> <span class="n">PositiveInt</span>
 
-<span class="kn">from</span> <span class="nn">data_juicer.ops.base_op</span> <span class="kn">import</span> <span class="n">OPERATORS</span><span class="p">,</span> <span class="n">Mapper</span>
-<span class="kn">from</span> <span class="nn">data_juicer.utils.common_utils</span> <span class="kn">import</span> <span class="n">nested_set</span>
-<span class="kn">from</span> <span class="nn">data_juicer.utils.constant</span> <span class="kn">import</span> <span class="n">Fields</span><span class="p">,</span> <span class="n">MetaKeys</span>
-<span class="kn">from</span> <span class="nn">data_juicer.utils.model_utils</span> <span class="kn">import</span> <span class="n">get_model</span><span class="p">,</span> <span class="n">prepare_model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">data_juicer.ops.base_op</span><span class="w"> </span><span class="kn">import</span> <span class="n">OPERATORS</span><span class="p">,</span> <span class="n">TAGGING_OPS</span><span class="p">,</span> <span class="n">Mapper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">data_juicer.utils.constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fields</span><span class="p">,</span> <span class="n">MetaKeys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">data_juicer.utils.model_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_model</span><span class="p">,</span> <span class="n">prepare_model</span>
 
 <span class="n">OP_NAME</span> <span class="o">=</span> <span class="s1">&#39;dialog_sentiment_intensity_mapper&#39;</span>
 
 
 <span class="c1"># TODO: LLM-based inference.</span>
 <div class="viewcode-block" id="DialogSentimentIntensityMapper">
-<a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.dialog_sentiment_intensity_mapper.DialogSentimentIntensityMapper">[docs]</a>
+<a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.DialogSentimentIntensityMapper">[docs]</a>
+<span class="nd">@TAGGING_OPS</span><span class="o">.</span><span class="n">register_module</span><span class="p">(</span><span class="n">OP_NAME</span><span class="p">)</span>
 <span class="nd">@OPERATORS</span><span class="o">.</span><span class="n">register_module</span><span class="p">(</span><span class="n">OP_NAME</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">DialogSentimentIntensityMapper</span><span class="p">(</span><span class="n">Mapper</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DialogSentimentIntensityMapper</span><span class="p">(</span><span class="n">Mapper</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mapper to predict user&#39;s sentiment intensity (from -5 to 5 in default</span>
 <span class="sd">    prompt) in dialog. Input from history_key, query_key and</span>
 <span class="sd">    response_key. Output lists of intensities and analysis for queries in</span>
-<span class="sd">    the dialog, which is store in &#39;dialog_sentiment_intensity&#39; and</span>
-<span class="sd">    &#39;dialog_sentiment_intensity_analysis&#39; in Data-Juicer meta field.</span>
+<span class="sd">    the dialog.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">DEFAULT_SYSTEM_PROMPT</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;请判断用户和LLM多轮对话中用户的情绪变化。</span><span class="se">\n</span><span class="s1">&#39;</span>
                              <span class="s1">&#39;要求：</span><span class="se">\n</span><span class="s1">&#39;</span>
                              <span class="s1">&#39;- 用户情绪值是-5到5之间到整数，-5表示极度负面，5表示极度正面，&#39;</span>
                              <span class="s1">&#39;-5到5之间数值表示情绪从负面逐渐到正面的变化过程，0代表情呈绪中性。</span><span class="se">\n</span><span class="s1">&#39;</span>
+                             <span class="s1">&#39;- 只输出当轮对话的分析，不要继续构造对话。</span><span class="se">\n</span><span class="s1">&#39;</span>
                              <span class="s1">&#39;- 需要先进行分析，然后确定用户的情绪值，下面是一个样例，请模仿样例格式输出。</span><span class="se">\n</span><span class="s1">&#39;</span>
                              <span class="s1">&#39;用户：你好，我对可持续发展的定义有点模糊，帮我解释一下？</span><span class="se">\n</span><span class="s1">&#39;</span>
                              <span class="s1">&#39;情绪分析：刚开始，还没得到LLM回复，用户情绪呈中性。</span><span class="se">\n</span><span class="s1">&#39;</span>
@@ -143,30 +143,39 @@
     <span class="n">DEFAULT_INTENSITY_PATTERN</span> <span class="o">=</span> <span class="s1">&#39;情绪值：(.*?)($|</span><span class="se">\n</span><span class="s1">)&#39;</span>
 
 <div class="viewcode-block" id="DialogSentimentIntensityMapper.__init__">
-<a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.dialog_sentiment_intensity_mapper.DialogSentimentIntensityMapper.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">api_model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;gpt-4o&#39;</span><span class="p">,</span>
-                 <span class="n">max_round</span><span class="p">:</span> <span class="n">NonNegativeInt</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-                 <span class="o">*</span><span class="p">,</span>
-                 <span class="n">api_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">response_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">system_prompt</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">query_template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">response_template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">analysis_template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">intensity_template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">analysis_pattern</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">intensity_pattern</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">try_num</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
-                 <span class="n">model_params</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
-                 <span class="n">sampling_params</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
-                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.DialogSentimentIntensityMapper.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">api_model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;gpt-4o&#39;</span><span class="p">,</span>
+            <span class="n">max_round</span><span class="p">:</span> <span class="n">NonNegativeInt</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="o">*</span><span class="p">,</span>
+            <span class="n">intensities_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MetaKeys</span><span class="o">.</span><span class="n">dialog_sentiment_intensity</span><span class="p">,</span>
+            <span class="n">analysis_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MetaKeys</span><span class="o">.</span><span class="n">dialog_sentiment_intensity_analysis</span><span class="p">,</span>
+            <span class="n">api_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">response_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">system_prompt</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">query_template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">response_template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">analysis_template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">intensity_template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">analysis_pattern</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">intensity_pattern</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">try_num</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="n">model_params</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
+            <span class="n">sampling_params</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialization method.</span>
 
 <span class="sd">        :param api_model: API model name.</span>
 <span class="sd">        :param max_round: The max num of round in the dialog to build the</span>
 <span class="sd">            prompt.</span>
+<span class="sd">        :param intensities_key: The key name in the meta field to store</span>
+<span class="sd">            the output sentiment intensities. It is</span>
+<span class="sd">            &#39;dialog_sentiment_intensity&#39; in default.</span>
+<span class="sd">        :param analysis_key: The key name in the meta field to store the</span>
+<span class="sd">            corresponding analysis. It is</span>
+<span class="sd">            &#39;dialog_sentiment_intensity_analysis&#39; in default.</span>
 <span class="sd">        :param api_endpoint: URL endpoint for the API.</span>
 <span class="sd">        :param response_path: Path to extract content from the API response.</span>
 <span class="sd">            Defaults to &#39;choices.0.message.content&#39;.</span>
@@ -193,6 +202,8 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">max_round</span> <span class="o">=</span> <span class="n">max_round</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">intensities_key</span> <span class="o">=</span> <span class="n">intensities_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">analysis_key</span> <span class="o">=</span> <span class="n">analysis_key</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">system_prompt</span> <span class="o">=</span> <span class="n">system_prompt</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_SYSTEM_PROMPT</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">query_template</span> <span class="o">=</span> <span class="n">query_template</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_QUERY_TEMPLATE</span>
@@ -219,8 +230,8 @@
 
 
 <div class="viewcode-block" id="DialogSentimentIntensityMapper.build_input">
-<a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.dialog_sentiment_intensity_mapper.DialogSentimentIntensityMapper.build_input">[docs]</a>
-    <span class="k">def</span> <span class="nf">build_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">history</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+<a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.DialogSentimentIntensityMapper.build_input">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">history</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_round</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">input_prompt</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">max_round</span> <span class="o">*</span> <span class="mi">4</span><span class="p">:])</span>
         <span class="k">else</span><span class="p">:</span>
@@ -231,8 +242,8 @@
 
 
 <div class="viewcode-block" id="DialogSentimentIntensityMapper.parse_output">
-<a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.dialog_sentiment_intensity_mapper.DialogSentimentIntensityMapper.parse_output">[docs]</a>
-    <span class="k">def</span> <span class="nf">parse_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+<a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.DialogSentimentIntensityMapper.parse_output">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
         <span class="n">analysis</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="n">intensity</span> <span class="o">=</span> <span class="mi">0</span>
 
@@ -248,8 +259,13 @@
 
 
 <div class="viewcode-block" id="DialogSentimentIntensityMapper.process_single">
-<a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.dialog_sentiment_intensity_mapper.DialogSentimentIntensityMapper.process_single">[docs]</a>
-    <span class="k">def</span> <span class="nf">process_single</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<a class="viewcode-back" href="../../../../data_juicer.ops.mapper.html#data_juicer.ops.mapper.DialogSentimentIntensityMapper.process_single">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_single</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="n">meta</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[</span><span class="n">Fields</span><span class="o">.</span><span class="n">meta</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">intensities_key</span> <span class="ow">in</span> <span class="n">meta</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">analysis_key</span> <span class="ow">in</span> <span class="n">meta</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">sample</span>
+
         <span class="n">client</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_key</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="n">rank</span><span class="p">)</span>
 
         <span class="n">analysis_list</span> <span class="o">=</span> <span class="p">[]</span>
@@ -291,10 +307,8 @@
             <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">intensity_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">intensity</span><span class="o">=</span><span class="n">intensity</span><span class="p">))</span>
             <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="n">qa</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
 
-        <span class="n">analysis_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">Fields</span><span class="o">.</span><span class="n">meta</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">MetaKeys</span><span class="o">.</span><span class="n">dialog_sentiment_intensity_analysis</span><span class="si">}</span><span class="s1">&#39;</span>  <span class="c1"># noqa: E501</span>
-        <span class="n">sample</span> <span class="o">=</span> <span class="n">nested_set</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">analysis_key</span><span class="p">,</span> <span class="n">analysis_list</span><span class="p">)</span>
-        <span class="n">intensity_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">Fields</span><span class="o">.</span><span class="n">meta</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">MetaKeys</span><span class="o">.</span><span class="n">dialog_sentiment_intensity</span><span class="si">}</span><span class="s1">&#39;</span>
-        <span class="n">sample</span> <span class="o">=</span> <span class="n">nested_set</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">intensity_key</span><span class="p">,</span> <span class="n">intensities</span><span class="p">)</span>
+        <span class="n">meta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">intensities_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">intensities</span>
+        <span class="n">meta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">analysis_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">analysis_list</span>
 
         <span class="k">return</span> <span class="n">sample</span></div>
 </div>
